@@ -39,13 +39,17 @@ io.on("connection", (socket) => {
     // socket.broadcast.emit("message", generateMessage("A new user has joined!"));
     //socket.emit, io.emit, socket.broadcast.emit
     //io.to.emit, socket.broadcast.to.emit
-    socket.emit("message", generateMessage("Adim", "Welcome!"));
+    socket.emit("message", generateMessage("Admin", "Welcome!"));
     socket.broadcast
       .to(user.room)
       .emit(
         "message",
         generateMessage(user.username, `${user.username} has joined!`)
       );
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
     callback();
   });
 
@@ -79,6 +83,10 @@ io.on("connection", (socket) => {
         "message",
         generateMessage(`${user.username} has left!`)
       );
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
     }
   });
 });
